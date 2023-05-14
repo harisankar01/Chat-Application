@@ -1,12 +1,10 @@
 {
   "hosting": {
     "public": "public",
-    "rewrites": [
-      {
-        "source": "**",
-        "function": "app"
-      }
-    ],
+    "rewrites": [{
+      "source": "**",
+      "function": "app"
+    }],
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -22,9 +20,6 @@
         ".git",
         "firebase-debug.log",
         "firebase-debug.*.log"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint"
       ]
     }
   ]
