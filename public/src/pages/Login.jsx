@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../utils/axios";
 import styled from "styled-components";
 import { useNavigate, Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { loginRoute } from "../utils/APIRoutes";
+import { auth } from "../utils/firebase";
+import {FcGoogle} from "react-icons/fc"
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut
+} from "firebase/auth";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [values, setValues] = useState({ username: "", password: "" });
   const toastOptions = {
     position: "bottom-right",
     autoClose: 8000,
@@ -23,70 +29,48 @@ export default function Login() {
     }
   }, []);
 
-  const handleChange = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
+    const signInWithGoogle = async () => {
+      await signOut(auth);
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then(async (res) => {
+          const idToken = await res.user.getIdToken();
+          await axios.post(loginRoute, {
+            tokenId: idToken, 
+          }).then((result)=>{
+            localStorage.setItem(process.env.REACT_APP_LOCALHOST_KEY, result.data.token);
+            localStorage.setItem("user_id", result.data.userId);
+            axios.defaults.headers.common["Authorization"] = `Bearer ${result.data.token}`;
+            navigate("/");
+          })
+        })
+        .catch((err) => {
+           toast.error(err, toastOptions);
+        });
   };
 
-  const validateForm = () => {
-    const { username, password } = values;
-    if (username === "") {
-      toast.error("Email and Password is required.", toastOptions);
-      return false;
-    } else if (password === "") {
-      toast.error("Email and Password is required.", toastOptions);
-      return false;
-    }
-    return true;
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (validateForm()) {
-      const { username, password } = values;
-      const { data } = await axios.post(loginRoute, {
-        username,
-        password,
-      });
-      if (data.status === false) {
-        toast.error(data.msg, toastOptions);
-      }
-      if (data.status === true) {
-        localStorage.setItem(
-          process.env.REACT_APP_LOCALHOST_KEY,
-          JSON.stringify(data.user)
-        );
-
-        navigate("/");
-      }
-    }
-  };
 
   return (
     <>
       <FormContainer>
-        <form action="" onSubmit={(event) => handleSubmit(event)}>
+        <div className="form">
           <div className="brand">
             <img src={Logo} alt="logo" />
-            <h1>snappy</h1>
+            <h1>CHATTY</h1>
           </div>
-          <input
-            type="text"
-            placeholder="Username"
-            name="username"
-            onChange={(e) => handleChange(e)}
-            min="3"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            onChange={(e) => handleChange(e)}
-          />
-          <button type="submit">Log In</button>
-          <span>
-            Don't have an account ? <Link to="/register">Create One.</Link>
-          </span>
-        </form>
+          <button
+            className="ui-button"
+            type="button"
+            onClick={ () =>  signInWithGoogle()}
+          >
+            <div>
+            <FcGoogle/>
+            </div>
+            <div style={{"marginLeft":"10px"}}>
+            Login with Google
+            </div>
+          </button>
+        </div>
       </FormContainer>
       <ToastContainer />
     </>
@@ -116,7 +100,7 @@ const FormContainer = styled.div`
     }
   }
 
-  form {
+  .form {
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -124,19 +108,12 @@ const FormContainer = styled.div`
     border-radius: 2rem;
     padding: 5rem;
   }
-  input {
-    background-color: transparent;
-    padding: 1rem;
-    border: 0.1rem solid #4e0eff;
-    border-radius: 0.4rem;
-    color: white;
-    width: 100%;
-    font-size: 1rem;
-    &:focus {
-      border: 0.1rem solid #997af0;
-      outline: none;
+  .form .ui-button{
+      width: 100%;
+      display: inline-flex;
+      justify-content: space-between;
+      align-items: center;
     }
-  }
   button {
     background-color: #4e0eff;
     color: white;
@@ -151,13 +128,5 @@ const FormContainer = styled.div`
       background-color: #4e0eff;
     }
   }
-  span {
-    color: white;
-    text-transform: uppercase;
-    a {
-      color: #4e0eff;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  }
+  
 `;

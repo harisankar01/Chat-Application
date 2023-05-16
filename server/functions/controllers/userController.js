@@ -1,72 +1,91 @@
-const User = require("../models/userModel");
+require("dotenv").config({ path: "../.env" });
+var admin = require("firebase-admin");
+const { uuid } = require("uuidv4");
+const connection = require("../db");
+var serviceAccount = require("../chat-app-a1d1b-firebase-adminsdk-k7rku-0f2bb3c247.json");
+const jwt = require("jsonwebtoken");
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
 
 module.exports.login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (!user)
-      return res.json({ msg: "Incorrect Username or Password", status: false });
-    const isPasswordValid = true;
-    if (!isPasswordValid)
-      return res.json({ msg: "Incorrect Username or Password", status: false });
-    delete user.password;
-    return res.json({ status: true, user });
-  } catch (ex) {
-    next(ex);
-  }
-};
+    const { tokenId } = req.body;
+    const { name, email } = await admin.auth().verifyIdToken(tokenId);
+    connection.query(
+      "SELECT * FROM users WHERE email = ?",
+      [email],
+      (error, results) => {
+        if (error) {
+          return next(error);
+        }
+        if (results.length > 0) {
+          const user = results[0];
+          const token = jwt.sign(
+            { name: user.name, email: user.email },
+            process.env.JWT_SECRET,
+            {
+              expiresIn: "1h",
+            }
+          );
+          res.json({ token, userId: user.user_id });
+        } else {
+          const userId = uuid();
+          connection.query(
+            "INSERT INTO users (user_id, name, email, avatar_url) VALUES (?, ?, ?, ?)",
+            [userId, name, email, ""],
+            (error) => {
+              if (error) {
+                return next(error);
+              }
+              const token = jwt.sign({ name, email }, process.env.JWT_SECRET, {
+                expiresIn: "1h",
+              });
 
-module.exports.register = async (req, res, next) => {
-  try {
-    const { username, email, password } = req.body;
-    const usernameCheck = await User.findOne({ username });
-    if (usernameCheck)
-      return res.json({ msg: "Username already used", status: false });
-    const emailCheck = await User.findOne({ email });
-    if (emailCheck)
-      return res.json({ msg: "Email already used", status: false });
-    const hashedPassword = password;
-    const user = await User.create({
-      email,
-      username,
-      password: hashedPassword,
-    });
-    delete user.password;
-    return res.json({ status: true, user });
-  } catch (ex) {
-    next(ex);
-  }
-};
-
-module.exports.getAllUsers = async (req, res, next) => {
-  try {
-    const users = await User.find({ _id: { $ne: req.params.id } }).select([
-      "email",
-      "username",
-      "avatarImage",
-      "_id",
-    ]);
-    return res.json(users);
-  } catch (ex) {
+              res.json({ token, userId });
+            }
+          );
+        }
+      }
+    );
+  } catch (error) {
     next(ex);
   }
 };
 
 module.exports.setAvatar = async (req, res, next) => {
   try {
-    const userId = req.params.id;
-    const avatarImage = req.body.image;
-    const userData = await User.findByIdAndUpdate(
-      userId,
-      {
-        isAvatarImageSet: true,
-        avatarImage,
-      },
-      { new: true }
+    const user_id = req.params.id;
+    const avatar_url = req.body.image;
+    connection.query(
+      "UPDATE users SET avatar_url = ? WHERE user_id = ?",
+      [avatar_url, user_id],
+      (error, results, fields) => {
+        if (error) {
+          console.error(error);
+          res.status(500).send("Internal server error");
+        } else {
+          res.json({
+            isSet: true,
+          });
+        }
+      }
     );
-    return res.json({
-      isSet: userData.isAvatarImageSet,
-      image: userData.avatarImage,
+  } catch (error) {
+    next(ex);
+  }
+};
+
+module.exports.getAllUsers = async (req, res, next) => {
+  try {
+    const sql = "SELECT * FROM users";
+    connection.query(sql, (err, users) => {
+      if (err) {
+        res.status(500).send("Error retrieving users from database");
+        return;
+      }
+      // Send the fetched data as response
+      res.status(200).json(users);
     });
   } catch (ex) {
     next(ex);

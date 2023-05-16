@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { IoMdSend } from "react-icons/io";
 import styled from "styled-components";
-import Picker from "emoji-picker-react";
+import EmojiPicker from "emoji-picker-react";
 
 export default function ChatInput({ handleSendMsg }) {
   const [msg, setMsg] = useState("");
@@ -11,7 +11,7 @@ export default function ChatInput({ handleSendMsg }) {
     setShowEmojiPicker(!showEmojiPicker);
   };
 
-  const handleEmojiClick = (event, emojiObject) => {
+  const handleEmojiClick = (emojiObject,event) => {
     let message = msg;
     message += emojiObject.emoji;
     setMsg(message);
@@ -30,13 +30,14 @@ export default function ChatInput({ handleSendMsg }) {
       <div className="button-container">
         <div className="emoji">
           <BsEmojiSmileFill onClick={handleEmojiPickerhideShow} />
-          {showEmojiPicker && <Picker onEmojiClick={handleEmojiClick} />}
+          {showEmojiPicker && <EmojiPicker  onEmojiClick={handleEmojiClick} />}
         </div>
       </div>
       <form className="input-container" onSubmit={(event) => sendChat(event)}>
         <input
           type="text"
           placeholder="type your message here"
+          onClick={(e)=>setShowEmojiPicker(false)}
           onChange={(e) => setMsg(e.target.value)}
           value={msg}
         />
@@ -63,6 +64,15 @@ const Container = styled.div`
     align-items: center;
     color: white;
     gap: 1rem;
+    @media screen and (max-width: 719px) {
+     .emoji {
+      right: 20px;
+      .EmojiPickerReact {
+        position: absolute;
+        top: 200px;
+      }
+     }
+    }
     .emoji {
       position: relative;
       svg {
@@ -70,9 +80,9 @@ const Container = styled.div`
         color: #ffff00c8;
         cursor: pointer;
       }
-      .emoji-picker-react {
+      .EmojiPickerReact {
         position: absolute;
-        top: -350px;
+        top: -500px;
         background-color: #080420;
         box-shadow: 0 5px 10px #9a86f3;
         border-color: #9a86f3;
@@ -105,6 +115,9 @@ const Container = styled.div`
     align-items: center;
     gap: 2rem;
     background-color: #ffffff34;
+    @media screen and (max-width: 719px) {
+      gap: 1rem;
+    }
     input {
       width: 90%;
       height: 60%;
@@ -129,6 +142,12 @@ const Container = styled.div`
       align-items: center;
       background-color: #9a86f3;
       border: none;
+      @media screen and (max-width: 719px) {
+        padding: 0.3rem 1rem;
+        svg {
+          font-size: 0.5rem;
+        }
+      }
       @media screen and (min-width: 720px) and (max-width: 1080px) {
         padding: 0.3rem 1rem;
         svg {

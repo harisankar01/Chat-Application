@@ -10,6 +10,10 @@ module.exports = {
   },
   resolve: {
     extensions: [".js", ".jsx"],
+    fallback: {
+      stream: require.resolve("stream-browserify"),
+      buffer: require.resolve("Buffer"),
+    },
   },
   module: {
     rules: [
@@ -30,6 +34,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       filename: "./index.html",
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
+    }),
+    new webpack.ProvidePlugin({
+      process: "process/browser",
     }),
   ],
 };

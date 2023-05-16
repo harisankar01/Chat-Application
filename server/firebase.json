@@ -9,7 +9,29 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "headers": [
+      {
+    "source": "/socket.io/**",
+    "headers": [
+        {
+        "key": "Access-Control-Allow-Origin",
+        "value": "*"
+        }
+      ]
+     }
     ]
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001,
+      "host": "localhost",
+      "cors": [
+        {
+          "origin": "*"
+        }
+      ]
+    }
   },
   "functions": [
     {

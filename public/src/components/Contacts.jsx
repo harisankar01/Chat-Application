@@ -1,35 +1,34 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Logo from "../assets/logo.svg";
+import axios from "../utils/axios";
 
-export default function Contacts({ contacts, changeChat }) {
-  const [currentUserName, setCurrentUserName] = useState(undefined);
-  const [currentUserImage, setCurrentUserImage] = useState(undefined);
+export default function Contacts({ contacts, changeChat, current_user }) {
+
   const [currentSelected, setCurrentSelected] = useState(undefined);
-  useEffect(async () => {
-    const data = await JSON.parse(
-      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-    );
-    setCurrentUserName(data.username);
-    setCurrentUserImage(data.avatarImage);
-  }, []);
+  useEffect(() => {
+    if(localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)){
+      axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)}`;
+    }
+  }, [])
+  
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
     changeChat(contact);
   };
   return (
     <>
-      {currentUserImage && currentUserImage && (
+      {current_user?.avatar_url  && (
         <Container>
           <div className="brand">
             <img src={Logo} alt="logo" />
-            <h3>snappy</h3>
+            <h3>Chatty</h3>
           </div>
           <div className="contacts">
             {contacts.map((contact, index) => {
               return (
                 <div
-                  key={contact._id}
+                  key={contact.user_id}
                   className={`contact ${
                     index === currentSelected ? "selected" : ""
                   }`}
@@ -37,12 +36,12 @@ export default function Contacts({ contacts, changeChat }) {
                 >
                   <div className="avatar">
                     <img
-                      src={`data:image/svg+xml;base64,${contact.avatarImage}`}
+                      src={contact.avatar_url}
                       alt=""
                     />
                   </div>
                   <div className="username">
-                    <h3>{contact.username}</h3>
+                    <h3>{contact.name}</h3>
                   </div>
                 </div>
               );
@@ -51,12 +50,12 @@ export default function Contacts({ contacts, changeChat }) {
           <div className="current-user">
             <div className="avatar">
               <img
-                src={`data:image/svg+xml;base64,${currentUserImage}`}
+                src={current_user.avatar_url}
                 alt="avatar"
               />
             </div>
             <div className="username">
-              <h2>{currentUserName}</h2>
+              <h2>{current_user.name}</h2>
             </div>
           </div>
         </Container>
@@ -69,33 +68,40 @@ const Container = styled.div`
   grid-template-rows: 10% 75% 15%;
   overflow: hidden;
   background-color: #080420;
+
   .brand {
     display: flex;
     align-items: center;
     gap: 1rem;
     justify-content: center;
+
     img {
       height: 2rem;
     }
+
     h3 {
       color: white;
       text-transform: uppercase;
     }
   }
+
   .contacts {
     display: flex;
     flex-direction: column;
     align-items: center;
     overflow: auto;
     gap: 0.8rem;
+
     &::-webkit-scrollbar {
       width: 0.2rem;
+
       &-thumb {
         background-color: #ffffff39;
         width: 0.1rem;
         border-radius: 1rem;
       }
     }
+
     .contact {
       background-color: #ffffff34;
       min-height: 5rem;
@@ -107,17 +113,20 @@ const Container = styled.div`
       gap: 1rem;
       align-items: center;
       transition: 0.5s ease-in-out;
+
       .avatar {
         img {
           height: 3rem;
         }
       }
+
       .username {
         h3 {
           color: white;
         }
       }
     }
+
     .selected {
       background-color: #9a86f3;
     }
@@ -129,24 +138,41 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
     gap: 2rem;
+
     .avatar {
       img {
         height: 4rem;
         max-inline-size: 100%;
       }
     }
+
     .username {
       h2 {
         color: white;
       }
     }
-    @media screen and (min-width: 720px) and (max-width: 1080px) {
-      gap: 0.5rem;
+
+    @media screen and (max-width: 767px) {
+      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+
+      .avatar {
+        img {
+          height: 3rem;
+        }
+      }
+
       .username {
         h2 {
-          font-size: 1rem;
+          font-size: 0.2rem;
         }
       }
     }
   }
+
+  @media screen and (max-width: 767px) {
+    grid-template-rows: auto 85% auto;
+  }
 `;
+
