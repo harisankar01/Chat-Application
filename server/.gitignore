@@ -11,12 +11,16 @@ firebase-debug.*.log*
 .firebase/
 
 # Firebase config
-
+functions/node_modules/
+functions/chat-app-a1d1b-firebase-adminsdk-k7rku-0f2bb3c247.json
+# Built files
+functions/dist/
 # Uncomment this if you'd like others to create their own Firebase project.
 # For a team working on the same Firebase project(s), it is recommended to leave
 # it commented so all members can deploy to the same project(s) in .firebaserc.
 # .firebaserc
-
+firebase.json
+firebase-debug.log
 # Runtime data
 pids
 *.pid
