@@ -1,5 +1,5 @@
 import axios from "axios";
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5001/chat-app-a1d1b/us-central1/app",
+  baseURL: "https://chat-app-a1d1b.web.app",
 });
 export default axiosInstance;

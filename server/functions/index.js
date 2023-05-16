@@ -1,6 +1,8 @@
 const functions = require("firebase-functions");
 const express = require("express");
-const cors = require("cors")({ origin: true });
+const cors = require("cors")({
+  origin: true,
+});
 
 const authRoutes = require("./routes/auth");
 const messageRoutes = require("./routes/messages");
@@ -17,7 +19,10 @@ app.get("/", (req, res) => {
 
 global.onlineUsers = new Map();
 exports.app = functions.https.onRequest((req, res) => {
-  res.set("Access-Control-Allow-Origin", "*");
+  res.set(
+    "Access-Control-Allow-Origin",
+    "https://chat-app-frontend123.web.app"
+  );
   res.set("Access-Control-Allow-Headers", "Content-Type");
   cors(req, res, () => {
     app(req, res);

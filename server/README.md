@@ -7,7 +7,8 @@ This is the backend for the chat application made with `express`. The backend in
 1. Clone the repository
 2. Move to the `functions` folder using the command, `cd .\functions\`.
 3. Run npm install to install all the dependencies.
-4. Create a `.env` file in the root directory with the following environment variables:
+4. Start an SQL instances in google cloud. You can use `cloud-sql-proxy` to connect to your sql instances and the queries in `table.sql` file to setup your database.
+5. Create a `.env` file in the root directory with the following environment variables:
 
 ```
 SQL_HOST_NAME= // enter the IP address

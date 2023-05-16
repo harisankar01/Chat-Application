@@ -5,8 +5,8 @@
   "targets": {
     "chat-app-a1d1b": {
       "hosting": {
-        "backend": [
-          "chat-app-backend123"
+        "frontend": [
+          "chat-app-frontend123"
         ]
       }
     }

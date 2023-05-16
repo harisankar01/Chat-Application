@@ -70,6 +70,7 @@ export default function ChatContainer({ currentChat, socket }) {
 
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
+    setArrivalMessage("")
   }, [arrivalMessage, currentChat]);
 
   useEffect(() => {

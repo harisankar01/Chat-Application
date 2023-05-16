@@ -3,11 +3,14 @@ const moment = require("moment");
 module.exports.getMessages = async (req, res, next) => {
   try {
     let { from, to } = req.body;
-    from = JSON.parse(from);
-    to = JSON.parse(from);
     connection.query(
       "SELECT * FROM messages WHERE (to_user_id = ? AND from_user_id = ? ) OR ( to_user_id = ? AND from_user_id = ? ) ORDER BY timestamp ASC",
-      [to, from, from, to],
+      [
+        to.replace(/"/g, ""),
+        from.replace(/"/g, ""),
+        from.replace(/"/g, ""),
+        to.replace(/"/g, ""),
+      ],
       (err, results) => {
         if (err) {
           console.error(err);
