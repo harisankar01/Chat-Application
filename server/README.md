@@ -7,7 +7,7 @@ This is the backend for the chat application made with `express`. The backend in
 1. Clone the repository
 2. Move to the `functions` folder using the command, `cd .\functions\`.
 3. Run npm install to install all the dependencies.
-4. Start an SQL instances in google cloud. You can use `cloud-sql-proxy` to connect to your sql instances and the queries in `table.sql` file to setup your database.
+4. Start an SQL instances in google cloud. You can use `cloud-sql-proxy` to connect to your sql instances and run the queries in `table.sql` file to setup your database.
 5. Create a `.env` file in the root directory with the following environment variables:
 
 ```
@@ -52,6 +52,8 @@ firebase emulators:start
 ```
 
 7. Deploy to Firebase using `firebase deploy` command
+
+> Note: Remember to add Cloud SQl Client Role to firebase functions and setup the environment variables from google cloud.
 
 ### Security
 

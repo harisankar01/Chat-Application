@@ -43,3 +43,21 @@ Google MySQL instance is used as the database for the chat application. The mess
 ## Image Storage
 
 Cloudinary is used to store user profile pictures. Users can either upload their own pictures or select an avatar from Multiavatar API.
+
+## Screenshots
+
+#### Login Page
+
+![login page](https://github.com/harisankar01/Chat-Application/assets/90249023/60359173-b737-4e2b-bfec-2a7b612e82bc)
+
+#### SetAvatar Page
+
+![select_profile_image](https://github.com/harisankar01/Chat-Application/assets/90249023/0c7672f9-0a99-460f-bf3a-a566fb382095)
+
+#### ChatWelcome Page
+
+![chat welcome](https://github.com/harisankar01/Chat-Application/assets/90249023/7d9861cf-c8c2-4faf-89db-6c203206b338)
+
+#### Chat Page
+
+![chat](https://github.com/harisankar01/Chat-Application/assets/90249023/a32b841c-e105-4898-b641-b4db57f80783)
